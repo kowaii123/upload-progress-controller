@@ -5,33 +5,22 @@
         :disabled="disabled"
         :http-request="handleHttpRequest"
         :limit="limit"
-        :multiple="isMultiple"
         :show-file-list="false"
         action=""
         class="upload">
-        <slot>
+        <slot name="uploader-btn">
             <el-button size="small" type="primary">点击上传</el-button>
         </slot>
     </el-upload>
 </template>
 <script>
-import KowaiiProgressBar from "./ProgressBar.vue";
 import axios from 'axios';
 
 export default {
     name: 'kowaii-uploader',
-    components: {KowaiiProgressBar},
     props: {
-        visible: {
-            type: Boolean,
-            default: false
-        },
         URL: {
             type: String,
-            default: ''
-        },
-        upload: {
-            type: Function,
         },
         beforeUpload: {
             type: Function,
@@ -39,14 +28,6 @@ export default {
         accept: {
             type: String,
             default: ''
-        },
-        isMultiple: {
-            type: Boolean,
-            default: false
-        },
-        limit: {
-            type: Number,
-            default: 1
         },
         disabled: {
             type: Boolean,
