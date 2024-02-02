@@ -21,10 +21,10 @@ export default {
             default: 0
         },
         fileName: {
-            type: String,
+            type: String
         },
         uploadStates: {
-            type: String,
+            type: String
         }
     },
     data() {
@@ -32,21 +32,21 @@ export default {
             isVisible: this.visible,
             myPercentage: this.percentage,
             myUploadStates: this.uploadStates,
-            myFileName: this.fileName,
+            myFileName: this.fileName
         }
     },
     watch: {
         visible(val) {
-            this.isVisible = val;
+            this.isVisible = val
         },
         percentage(val) {
-            this.myPercentage = val;
+            this.myPercentage = val
         },
         uploadStates(val) {
-            this.myUploadStates = val;
+            this.myUploadStates = val
         },
         fileName(val) {
-            this.myFileName = val;
+            this.myFileName = val
         }
     }
 }
@@ -57,7 +57,7 @@ export default {
     height: 110px;
     border-radius: 4px;
     border: 1px solid #ebeef5;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .kowaii-close-btn {

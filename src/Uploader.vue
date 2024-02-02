@@ -4,26 +4,26 @@
         :before-upload="handleBeforeUpload"
         :disabled="disabled"
         :http-request="handleHttpRequest"
-        :limit="limit"
         :show-file-list="false"
         action=""
-        class="upload">
+        class="upload"
+    >
         <slot name="uploader-btn">
             <el-button size="small" type="primary">点击上传</el-button>
         </slot>
     </el-upload>
 </template>
 <script>
-import axios from 'axios';
-
+import axios from 'axios'
 export default {
     name: 'kowaii-uploader',
     props: {
-        URL: {
+        url: {
             type: String,
+            required: true
         },
         beforeUpload: {
-            type: Function,
+            type: Function
         },
         accept: {
             type: String,
@@ -42,7 +42,7 @@ export default {
             }
         },
         requestData: {
-            type: Function,
+            type: Function
         }
     },
     data() {
@@ -50,23 +50,34 @@ export default {
     },
     methods: {
         handleHttpRequest(file) {
-            let data = "";
+            let data = ''
             if (this.requestData && typeof this.requestData === 'function') {
                 data = this.requestData(file)
             } else {
-                data = new FormData();
-                data.append('file', file);
+                data = new FormData()
+                data.append('file', file)
             }
-            axios.post(this.URL, data, {
-                headers: this.requestHeader,
-                onUploadProgress: (progressEvent) => {
-                    this.$emit('progress', progressEvent);
-                }
-            }).then((res) => {
-                this.$emit('success', res);
-            }).catch((err) => {
-                this.$emit('error', err);
-            });
+            // for (const key of data.keys()) {
+            //     console.log(key)
+            //     console.log(data.get(key))
+            // }
+            // console.log(data.keys())
+            // data.keys().forEach(key => {
+            //     console.log(key, data.get(key))
+            // })
+            axios
+                .post(this.url, data, {
+                    headers: this.requestHeader,
+                    onUploadProgress: progressEvent => {
+                        this.$emit('progress', progressEvent)
+                    }
+                })
+                .then(res => {
+                    this.$emit('success', res)
+                })
+                .catch(err => {
+                    this.$emit('error', err)
+                })
         },
         handleBeforeUpload(file) {
             if (this.beforeUpload && typeof this.beforeUpload === 'function') {
@@ -74,10 +85,9 @@ export default {
             } else {
                 return true
             }
-        },
+        }
     }
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
