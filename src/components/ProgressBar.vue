@@ -4,7 +4,7 @@
             <i class="el-icon-close" @click="isVisible = false"></i>
         </div>
         <span v-if="fileName" class="kowaii-tooltip-text">{{ myFileName }}</span>
-        <el-progress :percentage="myPercentage" class="kowaii-progress-bar"></el-progress>
+        <el-progress :percentage="myPercentage" :status="myUploadStatus" class="kowaii-progress-bar"></el-progress>
         <span v-if="uploadStates" class="kowaii-tooltip-hit">{{ myUploadStates }}</span>
     </div>
 </template>
@@ -25,6 +25,10 @@ export default {
         },
         uploadStates: {
             type: String
+        },
+        uploadStatus: {
+            type: String,
+            default: ""
         }
     },
     data() {
@@ -32,13 +36,15 @@ export default {
             isVisible: this.visible,
             myPercentage: this.percentage,
             myUploadStates: this.uploadStates,
-            myFileName: this.fileName
+            myFileName: this.fileName,
+            myUploadStatus: this.uploadStatus
         }
     },
     watch: {
         visible(val) {
             this.isVisible = val
         },
+
         percentage(val) {
             this.myPercentage = val
         },
@@ -47,6 +53,9 @@ export default {
         },
         fileName(val) {
             this.myFileName = val
+        },
+        uploadStatus(val) {
+            this.myUploadStatus = val
         }
     }
 }
