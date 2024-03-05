@@ -80,13 +80,13 @@ export default {
             type: Boolean,
             default: true
         },
-        progress: {
+        onProgress: {
             type: Function,
         },
-        success: {
+        onSuccess: {
             type: Function,
         },
-        error: {
+        onError: {
             type: Function,
         },
         name: {
@@ -99,7 +99,7 @@ export default {
     data() {
         return {
             isVisible: false,
-            myPercentage: this.percentage,
+            myPercentage: 0,
             myUploadStates: "",
             myFileName: "",
             myUploadStatus: "",
@@ -109,8 +109,17 @@ export default {
     methods: {
         handleBeforeUpload(file) {
             if (this.beforeUpload && typeof this.beforeUpload === 'function') {
-                this.beforeUpload(file)
+                return this.beforeUpload(file).then(() => {
+                    this.myPercentage = 0;
+                    this.myUploadStates = "";
+                    this.myUploadStatus = '';
+                    this.isVisible = true
+                }).catch(() => this.isVisible = false)
             } else {
+                this.myPercentage = 0;
+                this.myUploadStates = "";
+                this.myUploadStatus = '';
+                this.isVisible = true;
                 return true
             }
         },
@@ -118,26 +127,30 @@ export default {
             this.$emit('change', file, fileList)
         },
         handleProgress(e, file) {
-            if (this.progress && typeof this.progress === 'function') {
-                this.progress(e, file)
-            } else {
-                this.myPercentage = +(e.percent).toFixed(2);
+            if (this.onProgress && typeof this.onProgress === 'function') {
+                this.onProgress(e, file);
+                this.myPercentage = +(e.percent).toFixed(1);
                 this.myUploadStates = '上传中';
                 this.myFileName = file.name;
-                this.isVisible = true;
+            } else {
+                this.myPercentage = +(e.percent).toFixed(1);
+                this.myUploadStates = '上传中';
+                this.myFileName = file.name;
             }
         },
         handleSuccess(res, file) {
-            if (this.success && typeof this.success === 'function') {
-                this.success(res, file)
+            if (this.onSuccess && typeof this.onSuccess === 'function') {
+                this.onSuccess(res, file);
+                this.myUploadStates = '上传成功';
+                this.myUploadStatus = 'success';
             } else {
                 this.myUploadStates = '上传成功';
                 this.myUploadStatus = 'success';
             }
         },
         handleError(err, file) {
-            if (this.error && typeof this.error === 'function') {
-                this.error(err, file)
+            if (this.onError && typeof this.onError === 'function') {
+                this.onError(err, file)
             } else {
                 this.myUploadStates = '上传失败';
                 this.myUploadStatus = 'warning';
@@ -167,6 +180,7 @@ export default {
     border-radius: 4px;
     border: 1px solid #ebeef5;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    background-color: #fff;
 }
 
 .kowaii-close-btn {
