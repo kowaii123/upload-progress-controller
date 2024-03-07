@@ -2,6 +2,7 @@
     <div>
         <uploader
             :extra-data="extraData"
+            :is-multi="true"
             :request-header="requestHeader"
             :visible="visible"
             name="kowaii-uploader"

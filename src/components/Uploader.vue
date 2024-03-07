@@ -29,11 +29,13 @@
                 <div class="kowaii-close-btn">
                     <i class="el-icon-close" @click="handleClose"></i>
                 </div>
-                <span v-if="true" :title="myFileName" class="kowaii-tooltip-text">{{ myFileName }}</span>
-                <el-progress :percentage="myPercentage"
-                             :status="myUploadStatus"
-                             class="kowaii-progress-bar"></el-progress>
-                <span v-if="true" class="kowaii-tooltip-hit">{{ myUploadStates }}</span>
+                <div v-for="(file, index) in fileList" :key="index" class="kowaii-progress-info">
+                    <span v-if="true" :title="file.name" class="kowaii-tooltip-text">{{ file.name }}</span>
+                    <el-progress :percentage="file.percentage"
+                                 :status="file.status"
+                                 class="kowaii-progress-bar"></el-progress>
+                    <span v-if="true" class="kowaii-tooltip-hit">{{ file.state }}</span>
+                </div>
             </div>
         </div>
     </div>
@@ -103,6 +105,7 @@ export default {
             myUploadStates: "",
             myFileName: "",
             myUploadStatus: "",
+            fileList: [],
         }
     },
     watch: {},
@@ -110,15 +113,9 @@ export default {
         handleBeforeUpload(file) {
             if (this.beforeUpload && typeof this.beforeUpload === 'function') {
                 return this.beforeUpload(file).then(() => {
-                    this.myPercentage = 0;
-                    this.myUploadStates = "";
-                    this.myUploadStatus = '';
                     this.isVisible = true
                 }).catch(() => this.isVisible = false)
             } else {
-                this.myPercentage = 0;
-                this.myUploadStates = "";
-                this.myUploadStatus = '';
                 this.isVisible = true;
                 return true
             }
@@ -129,39 +126,43 @@ export default {
         handleProgress(e, file) {
             if (this.onProgress && typeof this.onProgress === 'function') {
                 this.onProgress(e, file);
-                this.myPercentage = +(e.percent).toFixed(1);
-                this.myUploadStates = '上传中';
-                this.myFileName = file.name;
             } else {
-                this.myPercentage = +(e.percent).toFixed(1);
-                this.myUploadStates = '上传中';
-                this.myFileName = file.name;
+                let fileData = this.fileList.find(item => item.name === file.name);
+                if (!fileData) {
+                    fileData = {
+                        name: file.name,
+                        percentage: 0,
+                        status: '',
+                        state: "Uploading",
+                    }
+                    this.fileList.push(fileData);
+                    console.log(this.fileList);
+                } else {
+                    fileData.percentage = +(e.percent).toFixed(1);
+                }
             }
         },
         handleSuccess(res, file) {
             if (this.onSuccess && typeof this.onSuccess === 'function') {
                 this.onSuccess(res, file);
-                this.myUploadStates = '上传成功';
-                this.myUploadStatus = 'success';
             } else {
-                this.myUploadStates = '上传成功';
-                this.myUploadStatus = 'success';
+                let fileData = this.fileList.find(item => item.name === file.name);
+                fileData.state = 'upload success';
+                fileData.status = 'success';
             }
         },
         handleError(err, file) {
             if (this.onError && typeof this.onError === 'function') {
                 this.onError(err, file)
             } else {
-                this.myUploadStates = '上传失败';
-                this.myUploadStatus = 'warning';
+                let fileData = this.fileList.find(item => item.name === file.name);
+                fileData.state = 'upload failed';
+                fileData.status = 'warning';
             }
         },
         handleClose() {
+            this.fileList.splice(0);
             this.isVisible = false;
-            this.myFileName = "";
-            this.myPercentage = 0;
-            this.myUploadStates = "";
-            this.myUploadStatus = "";
         }
     }
 }
@@ -176,11 +177,15 @@ export default {
 
 .kowaii-progress-container {
     width: 300px;
-    height: 110px;
     border-radius: 4px;
     border: 1px solid #ebeef5;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     background-color: #fff;
+}
+
+.kowaii-progress-info {
+    padding: 10px 0;
+    border-bottom: 1px solid #ebeef5;
 }
 
 .kowaii-close-btn {
@@ -194,7 +199,6 @@ export default {
     display: block;
     height: 20px;
     width: 250px;
-    margin-top: 18px;
     margin-left: 10px;
     line-height: 20px;
     font-size: 14px;
@@ -206,7 +210,7 @@ export default {
 .kowaii-tooltip-hit {
     display: block;
     height: 20px;
-    width: 60px;
+    width: 100px;
     margin-top: 10px;
     margin-left: 10px;
     line-height: 20px;
